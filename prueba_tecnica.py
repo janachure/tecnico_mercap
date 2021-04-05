@@ -28,18 +28,24 @@ class llamadas:
 	INICIO_RANGO = 800
 	FIN_RANGO = 2000
 
-	def __init__(self, duracion):
+	def __init__(self, duracion, horario, diaSemana):
 		self.min = duracion ## cuanto duro
+		self.hora = horario 
+		self.dia = diaSemana 
 		
 
+	def sem(self):
+		switcher = {1:"Lunes",2:"Martes",3:"Miercoles",4:"Jueves",5:"Viernes",6:"Sabado",7:"Domingo"}
+		return switcher[self.dia]
+
+## Clase de llamadas locales
 class locales(llamadas):
 	#horario expresado como un entero decimal de 4 digitos. 
 
 
 	def __init__(self, duracion, horario, diaSemana): 
-		super().__init__(duracion)
-		self.hora = horario 
-		self.dia = diaSemana 
+		super().__init__(duracion, horario, diaSemana)
+
 
 	def calculoConsumo(self):
 		ans = 0
@@ -53,29 +59,27 @@ class locales(llamadas):
 
 		return ans
 
-	def sem(self):
-		switcher = {1:"Lunes",2:"Martes",3:"Miercoles",4:"Jueves",5:"Viernes",6:"Sabado",7:"Domingo"}
-		return switcher[self.dia]
-
-
 	def show(self):
-		print(f"Local, {self.min}, Local , {self.sem()}, {self.hora}, {self.calculoConsumo()} ")
+		print(f"Local, {self.min} min , Local , {super().sem()} , {self.hora} , {self.calculoConsumo()} ")
 
+## Clase de llamadas nacional
 class nacional(llamadas):
-	def __init__(self, duracion, localidad):
-		super().__init__(duracion)
+	def __init__(self, duracion, horario, diaSemana, localidad):
+		super().__init__(duracion, horario, diaSemana)
 		self.localidad = localidad
+
 
 	def calculoConsumo(self):
 		ans = self.min * LOCALIDADES[self.localidad]
 		return ans
 
 	def show(self):
-		print(f"Nacional, {self.min}, {self.localidad}, NA , NA , {self.calculoConsumo()} ")
+		print(f"Nacional, {self.min} min , {self.localidad} , {super().sem()} , {self.hora} , {self.calculoConsumo()} ")
 
+## Clase de llamadas exterior
 class exterior(llamadas):
-	def __init__(self, duracion, pais):
-		super().__init__(duracion)
+	def __init__(self, duracion, horario, diaSemana, pais):
+		super().__init__(duracion, horario, diaSemana)
 		self.pais = pais 
 
 
@@ -84,5 +88,21 @@ class exterior(llamadas):
 		return ans
 
 	def show(self):
-		print(f"Exterior, {self.min}, {self.pais}, NA , NA , {self.calculoConsumo()} ")
+		print(f"Exterior, {self.min} min , {self.pais} , {super().sem()} , {self.hora} , {self.calculoConsumo()} ")
+
+## Test muy chico.
+
+a = facturacion(1410, 1400)
+## Agrego una nacional.
+b = nacional(10, 1930, 1, "Chascomus")
+a.agregar_llamada(b)
+
+## Agrego una del exterior.
+c = exterior(10,1530,2,"Brasil")
+a.agregar_llamada(c)
+
+## Agrego una local.
+d = locales(10, 700, 3) ## Duro 10 min, a las 19:30, el dia de la semana jueves.
+a.agregar_llamada(d)
+a.datosFactura()
 
